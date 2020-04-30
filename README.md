@@ -11,7 +11,7 @@ In this tutorial, we will build a web app which will help Dev teams conduct Plan
 - on that page, session owner will have the following elements:
   1. **Share** button which owner can send it to others to join in (same https://pokerme.web.app/sessions/af334df3)
   1. a table showing the list of Esimated Stories and response from each participants (columns)
-  1. for example, if a session has 5 users (including owner) and 8 stories were estimated, we will have a table like below
+  1. for example, if a session has 5 users (including owner) and 3 stories were estimated, we will have a table like below
   1. **Next Story** button and **Finish Session** button
 
 | Story              | Anthony | David | John | Ken | Luke | - AVG - |
@@ -20,7 +20,7 @@ In this tutorial, we will build a web app which will help Dev teams conduct Plan
 | 234: login         | 6       | 6     | 6    | 6   | 8    | 6       |
 | 235: logout        | 8       | 8     | 8    | 8   | 8    | 8       |
    
-- click on **Next Story** button will show a modal which show a form:
+- click on **Next Story** button will open a form:
   - with textbox for the **URL** to the user story (e.g in Github or Azure Devops or JIRA) 
   - and **Create** button
 - click **Create** will cause a modal to pop up shown on all **Participants** screen (cover all screen), displaying the URL to the story (automatically, via **websocket**)
