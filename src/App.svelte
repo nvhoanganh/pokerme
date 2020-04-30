@@ -1,30 +1,39 @@
 <script>
-	export let name;
+  import firebase from "firebase/app";
+  import "firebase/auth";
+
+  let user;
+  let initializing = true;
+  firebase.auth().onAuthStateChanged(u => {
+    initializing = false;
+    user = u;
+  });
+
+  function login() {
+    firebase.auth().signInWithRedirect(new firebase.auth.GoogleAuthProvider());
+  }
+  function logout() {
+    firebase.auth().signOut();
+  }
 </script>
 
-<main>
-	<h1>Hello {name}!</h1>
-	<p>Visit the <a href="https://svelte.dev/tutorial">Svelte tutorial</a> to learn how to build Svelte apps.</p>
-</main>
-
-<style>
-	main {
-		text-align: center;
-		padding: 1em;
-		max-width: 240px;
-		margin: 0 auto;
-	}
-
-	h1 {
-		color: #ff3e00;
-		text-transform: uppercase;
-		font-size: 4em;
-		font-weight: 100;
-	}
-
-	@media (min-width: 640px) {
-		main {
-			max-width: none;
-		}
-	}
-</style>
+{#if initializing}
+  <p>Loading...</p>
+{:else}
+  {#if !user}
+    <button on:click={login} class="button">Login Using Google</button>
+  {:else}
+    <div>
+      <h1>Hello {user.displayName}</h1>
+    </div>
+    <div>
+      <button class="button">Start New Planning Poker Session</button>
+      <button on:click={logout} class="button">Sign Out</button>
+    </div>
+    <div class="home">
+      <ul>
+        <li>Session 1: do this</li>
+      </ul>
+    </div>
+  {/if}
+{/if}
