@@ -1,94 +1,138 @@
-*Looking for a shareable component template? Go here --> [sveltejs/component-template](https://github.com/sveltejs/component-template)*
+# Planning Poker App with Svelte and Firebase in 1 day
+In this tutorial, we will build a web app which will help Dev teams conduct Planning Poker sessions online (assuming COVID-19 will stay and we will have to work from home for another 2 years).
 
----
+## Features of the PokerMe (or whatever you call it):
+- user visit https://pokerme.web.app/
+- home page will display: 
+  - If user currently logged in: **Create new Session** button and table of all previous planning poker sessions
+  - **Sign In With Google** button if user has not sign in yet
+- to sign in/sign up, all they need to do is click on the **Sign In With Google** button and login using their Gmail account
+- once signed in, user click **Create new Session**, user is redirected to https://pokerme.web.app/sessions/af334df3 (`af334df3` is unique session id)
+- on that page, session owner will have the following elements:
+  1. **Share** button which owner can send it to others to join in (same https://pokerme.web.app/sessions/af334df3)
+  1. a table showing the list of Esimated Stories and response from each participants (columns)
+  1. for example, if a session has 5 users (including owner) and 8 stories were estimated, we will have a table like below
+  1. **Next Story** button and **Finish Session** button
 
-# svelte app
+| Story              | Anthony | David | John | Ken | Luke | - AVG - |
+|--------------------|---------|-------|------|-----|------|---------|
+| 233: Create a page | 8       | 12    | 10   | 8   | 8    | 10      |
+| 234: login         | 6       | 6     | 6    | 6   | 8    | 6       |
+| 235: logout        | 8       | 8     | 8    | 8   | 8    | 8       |
+   
+- click on **Next Story** button will show a modal which show a form:
+  - with textbox for the **URL** to the user story (e.g in Github or Azure Devops or JIRA) 
+  - and **Create** button
+- click **Create** will cause a modal to pop up shown on all **Participants** screen (cover all screen), displaying the URL to the story (automatically, via **websocket**)
+- on **Partcipant** modal, there is only dropdown and they need to pick 1 value from: 0, ½, 1, 2, 3, 5, 8, 13, 20, 40, 100
+- on **Owner** modal, there is 1 more button, **Reveal Score**, click on this button will cause a timer of 10 seconds to start simultanousely on all users screen.
+- after 10 seconds, the score entered by all participants will be displayed to every one
+- on **Owner** modal, there is now new button, **Save**, click on this button will close the modal for everyone (via **websocket**) and update the table above
+- owner repeat the proces above for all required user stories
+- once done, owner clicks on **Finish Session** button, user will get redirected to home page. All other participants will get a message saying `Thanks, poker session is now completed, you can close this window now`
+- **other features:** 
+  - REST API supports: user can call https://asia-northeast1-pokerme.cloudfunctions.net/getSessions?api=key to get the list of all completed sessions.
 
-This is a project template for [Svelte](https://svelte.dev) apps. It lives at https://github.com/sveltejs/template.
 
-To create a new project based on this template using [degit](https://github.com/Rich-Harris/degit):
-
-```bash
-npx degit sveltejs/template svelte-app
-cd svelte-app
-```
-
-*Note that you will need to have [Node.js](https://nodejs.org) installed.*
+## Tech stack: all free services from Google
+- Front end: https://svelte.dev/ hosted on firebase hosting
+- Sessions details: Firestore (NoSql) - (Equivalent to Azure CosmodDB)
+- Realtime updates: Firebase Realtime Database (Equivalent to Azure SignalR service)
+- REST Api: Firebase Functions (Equivalent to Azure functions)
 
 
-## Get started
+## Presequisites
+- nodejs v10
+- vscode
+- gmail account
 
-Install the dependencies...
+# Step 1: setup our applications components
 
-```bash
-cd svelte-app
+## Create new svelte app
+```sh
+npx degit sveltejs/template pokerme
 npm install
-```
-
-...then start [Rollup](https://rollupjs.org):
-
-```bash
 npm run dev
 ```
 
-Navigate to [localhost:5000](http://localhost:5000). You should see your app running. Edit a component file in `src`, save it, and reload the page to see your changes.
+Then open `http://localhost:5000/` make sure you can see the app running
 
-By default, the server will only respond to requests from localhost. To allow connections from other computers, edit the `sirv` commands in package.json to include the option `--host 0.0.0.0`.
+## Sign up firebase account
 
-
-## Building and running in production mode
-
-To create an optimised version of the app:
-
-```bash
-npm run build
+```sh
+npm i -g firebase-tools
+firebase login
+firebase init
+# For prompt and
+# select: Database, Firestore, Hosting and Functions
+# create new project (pick an ID for the project, this will be part of your URL)
+# for function -> you can use either JS or TS
+# for hosting -> use public as the deploy folder, select Y for rewriting to /index.html
 ```
 
-You can run the newly built app with `npm run start`. This uses [sirv](https://github.com/lukeed/sirv), which is included in your package.json's `dependencies` so that the app will work when you deploy to platforms like [Heroku](https://heroku.com).
-
-
-## Single-page app mode
-
-By default, sirv will only respond to requests that match files in `public`. This is to maximise compatibility with static fileservers, allowing you to deploy your app anywhere.
-
-If you're building a single-page app (SPA) with multiple routes, sirv needs to be able to respond to requests for *any* path. You can make it so by editing the `"start"` command in package.json:
-
-```js
-"start": "sirv public --single"
+## Deploy UI to firebase
+```sh
+firebase deploy --only hosting
 ```
 
+Go to https://pokerme.web.app/ and make sure you can app live
 
-## Deploying to the web
+## Create Realtime Database on Firebase
 
-### With [now](https://zeit.co/now)
+-   Login to https://console.firebase.google.com/u/0/project/pokerme/database
+-   Click on Create Database
+-   Select _Start in test mode_
+-   Pick location closest to your user (can't be changed later)
 
-Install `now` if you haven't already:
+## Enable Authentication
 
-```bash
-npm install -g now
+-   Go to _Authentication_ menu on the left and click on _Set up sign-in method_
+-   Enable Google Authentication
+
+## Get the project config JSON file
+
+-   Click on the Cog icon next to project Overview and select _Project Settings_
+-   Under Your apps => Click Web Icon to create new web app and Click on "Register Web app"
+-   Click on _Continue to Console_
+-   Under _Firebase SDK snippet_ select _Config_
+-   Copy the JSON value, it should looks like this
+
+```json
+const firebaseConfig = {
+  apiKey: "<API>",
+  authDomain: "pokerme.firebaseapp.com",
+  databaseURL: "https://pokerme.firebaseio.com",
+  projectId: "pokerme",
+  storageBucket: "pokerme.appspot.com",
+  messagingSenderId: "801289526392",
+  appId: "1:801289526392:web:966d747a2a6db238ade18d"
+};
 ```
 
-Then, from within your project folder:
+## Deploy Functions (REST Api)
+edit `index.ts` file under `functions\src` folder to:
+```javascript
+import * as functions from 'firebase-functions';
+export const sessions = functions
+	.region('asia-northeast1')
+	.https.onRequest((request, response) => {
+		response.send([]);
+	});
 
-```bash
-cd public
-now deploy --name my-project
 ```
-
-As an alternative, use the [Now desktop client](https://zeit.co/download) and simply drag the unzipped project folder to the taskbar icon.
-
-### With [surge](https://surge.sh/)
-
-Install `surge` if you haven't already:
-
-```bash
-npm install -g surge
+then deploy it by running
+```sh
+firebase deploy --only functions
 ```
+from the command line, it should tell you the deployed URL of the REST API. 
 
-Then, from within your project folder:
+Mine at: https://asia-northeast1-pokerme.cloudfunctions.net/sessions
 
-```bash
-npm run build
-surge public my-project.surge.sh
-```
-# pokerme
+## Step 1: check list
+- my UI is deployed
+- my REST API is deployed 
+- I have my `firebaseConfig` JSON file
+- I have enable Google Authentication on Firebase console
+
+# Step 2: Start coding the UI
+.. on the day
