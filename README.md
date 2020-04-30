@@ -88,7 +88,7 @@ Go to https://pokerme.web.app/ and make sure you can app live
 -   Enable Google Authentication only (we won't be doing other types of Auth in the tutorial)
 
 ## Get the project config JSON file
-
+We need this config file so that the UI can read/write into the database we created above
 -   Click on the Cog icon next to project Overview and select _Project Settings_
 -   Under Your apps => Click Web Icon to create new web app and Click on "Register Web app"
 -   Click on _Continue to Console_
