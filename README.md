@@ -41,10 +41,11 @@ In this tutorial, we will build a web app which will help Dev teams conduct Plan
 - REST Api: Firebase Functions (Equivalent to Azure functions)
 
 
-## Presequisites
-- nodejs v10
-- vscode
-- gmail account
+## Prerequisites
+- [ ] nodejs v10
+- [ ] vscode
+- [ ] gmail account
+- [ ] install `Svelte`, `Svelte 3 Snippets` and `Svelte Intellisense` extension on VSCODE
 
 # Step 1: setup our application components
 **Note**: I registered my firebase app ID as `pokerme`, you won't be able to use this name, so make sure you replace `pokerme` in this guide with the project Id you choose below
