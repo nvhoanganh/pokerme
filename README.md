@@ -46,8 +46,8 @@ In this tutorial, we will build a web app which will help Dev teams conduct Plan
 - vscode
 - gmail account
 
-# Step 1: setup our applications components
-
+# Step 1: setup our application components
+**Note**: I registered my firebase app ID as `pokerme`, you won't be able to use this name, so make sure you replace `pokerme` in this guide with the project Id you choose below
 ## Create new svelte app
 ```sh
 npx degit sveltejs/template pokerme
