@@ -85,7 +85,7 @@ Go to https://pokerme.web.app/ and make sure you can app live
 ## Enable Authentication
 
 -   Go to _Authentication_ menu on the left and click on _Set up sign-in method_
--   Enable Google Authentication
+-   Enable Google Authentication only (we won't be doing other types of Auth in the tutorial)
 
 ## Get the project config JSON file
 
