@@ -77,7 +77,7 @@ firebase deploy --only hosting
 
 Go to https://pokerme.web.app/ and make sure you can app live
 
-## Create Realtime Database on Firebase
+## Create Realtime Database and Firestore Database on Firebase
 
 -   Login to https://console.firebase.google.com/u/0/project/pokerme/database
 -   Click on Create Database
