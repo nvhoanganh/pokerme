@@ -36,7 +36,7 @@ In this tutorial, we will build a web app which will help Dev teams conduct Plan
 
 ## Tech stack: all free services from Google
 - Front end: https://svelte.dev/ hosted on firebase hosting
-- Sessions details: Firestore (NoSql) - (Equivalent to Azure CosmodDB)
+- Planning Poker Sessions database: Firestore (NoSql) - (Equivalent to Azure CosmodDB)
 - Realtime updates: Firebase Realtime Database (Equivalent to Azure SignalR service)
 - REST Api: Firebase Functions (Equivalent to Azure functions)
 
