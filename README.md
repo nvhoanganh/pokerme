@@ -79,7 +79,7 @@ Go to https://pokerme.web.app/ and make sure you can app live
 
 ## Create Realtime Database and Firestore Database on Firebase
 
--   Login to https://console.firebase.google.com/u/0/project/pokerme/database
+-   Login to https://console.firebase.google.com and select your project
 -   Click on Create Database
 -   Select _Start in test mode_
 -   Pick location closest to your user (can't be changed later)
