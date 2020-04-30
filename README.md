@@ -31,7 +31,7 @@ In this tutorial, we will build a web app which will help Dev teams conduct Plan
 - owner repeat the proces above for all required user stories
 - once done, owner clicks on **Finish Session** button, user will get redirected to home page. All other participants will get a message saying `Thanks, poker session is now completed, you can close this window now`
 - **other features:** 
-  - REST API supports: user can call https://asia-northeast1-pokerme.cloudfunctions.net/getSessions?api=key to get the list of all completed sessions.
+  - REST API supports: user can call https://asia-northeast1-pokerme.cloudfunctions.net/sessions?api=key to get the list of all completed sessions.
 
 
 ## Tech stack: all free services from Google
