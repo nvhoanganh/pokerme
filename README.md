@@ -97,7 +97,7 @@ Go to https://pokerme.web.app/ and make sure you can app live
 -   Under _Firebase SDK snippet_ select _Config_
 -   Copy the JSON value, it should looks like this
 
-```json
+```sh
 const firebaseConfig = {
   apiKey: "<API>",
   authDomain: "pokerme.firebaseapp.com",
