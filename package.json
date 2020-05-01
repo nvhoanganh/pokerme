@@ -4,7 +4,9 @@
   "scripts": {
     "build": "rollup -c",
     "dev": "rollup -c -w",
-    "start": "sirv public --single"
+    "start": "sirv public --single",
+    "predeploy": "npm run build",
+    "deploy": "firebase deploy --only hosting"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "11.0.2",
