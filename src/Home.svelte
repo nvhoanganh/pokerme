@@ -8,7 +8,7 @@
   const db = firebase.firestore();
 
   let errorMsg;
-  
+
   function login() {
     firebase.auth().signInWithRedirect(new firebase.auth.GoogleAuthProvider());
   }
@@ -62,7 +62,38 @@
       <div class="text-red-300 text-xl">{errorMsg}</div>
     {/if}
     {#if !$user$}
-      <div class="text-grey-400 font-sm pb-4">
+      <div class="text-grey-300 text pb-4 font-mono">
+        <svg
+          fill="none"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          width="22"
+          height="22"
+          class="inline-block"
+          stroke="currentColor"
+          viewBox="0 0 24 24">
+          <path
+            d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13
+            21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+        </svg>
+        a FREE Scrum Planning Poker app
+        <svg
+          fill="none"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          width="22"
+          height="22"
+          class="inline-block"
+          stroke="currentColor"
+          viewBox="0 0 24 24">
+          <path
+            d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13
+            21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+        </svg>
+      </div>
+      <div class="text-grey-400 font-sm font-mono pb-8 pt-6">
         Sign in to create new session
       </div>
       <button
@@ -72,8 +103,8 @@
         hover:text-white py-2 px-4 border border-red-700
         hover:border-transparent rounded">
         <svg
-          width="22"
-          height="22"
+          width="20"
+          height="20"
           class="inline-block mr-1"
           viewBox="0 0 256 262"
           xmlns="http://www.w3.org/2000/svg"
@@ -102,7 +133,7 @@
             74.414-54.251"
             fill="#EB4335" />
         </svg>
-        Sign In Using Google
+        Sign In with Google
       </button>
     {:else}
       <div class="text-grey-400 font-sm">
