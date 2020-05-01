@@ -9,6 +9,11 @@ const routes = [
 		layout: Layout,
 	},
 	{
+		name: '/home',
+		component: Home,
+		layout: Layout,
+	},
+	{
 		name: '/sessions/:id',
 		component: Session,
 		layout: Layout,

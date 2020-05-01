@@ -16,8 +16,10 @@
     "svelte": "^3.0.0"
   },
   "dependencies": {
+    "copy-to-clipboard": "^3.3.1",
     "firebase": "^7.14.2",
     "sirv-cli": "^0.4.4",
+    "slug": "^2.1.1",
     "svelte-router-spa": "^5.6.0"
   }
 }
