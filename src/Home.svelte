@@ -1,7 +1,7 @@
 <script>
   import firebase from "firebase/app";
+  import { Navigate, navigateTo } from "svelte-router-spa";
   import { user$, init$ } from "./stores";
-  import { navigateTo } from "svelte-router-spa";
   import "firebase/auth";
   import "firebase/firestore";
 
@@ -11,7 +11,7 @@
   function login() {
     firebase.auth().signInWithRedirect(new firebase.auth.GoogleAuthProvider());
   }
-  
+
   function logout() {
     firebase.auth().signOut();
   }
@@ -31,13 +31,34 @@
         errorMsg = error;
       });
   }
+
+  let listOfSessions = [];
+  user$.subscribe(u => {
+    if (!u) return;
+
+    db.collection("sessions")
+      .where("createdBy", "==", u.uid)
+      .get()
+      .then(function(querySnapshot) {
+        // can't push directly to listOfSessions
+        let list = [];
+        querySnapshot.forEach(function(doc) {
+          list.push({ id: doc.id, ...doc.data() });
+        });
+        listOfSessions = list;
+        console.log(listOfSessions);
+      })
+      .catch(function(error) {
+        errorMsg = error;
+      });
+  });
 </script>
 
 {#if $init$}
   <p>Loading...</p>
 {:else}
   {#if errorMsg}
-    <span style="color: red">Error creating session</span>
+    <span style="color: red">{errorMsg}</span>
   {/if}
   {#if !$user$}
     <button on:click={login} class="button">Login Using Google</button>
@@ -52,9 +73,14 @@
       <button on:click={logout} class="button">Sign Out</button>
     </div>
     <div class="home">
-      <ul>
-        <li>Session 1: do this</li>
-      </ul>
+      <ol>
+        {#each listOfSessions as item}
+          <li>
+            Created on {item.timeStampt.toDate().toLocaleDateString()} at {item.timeStampt.toDate().toLocaleTimeString()} : 
+            <Navigate to={'/sessions/' + item.id}>View</Navigate>
+          </li>
+        {/each}
+      </ol>
     </div>
   {/if}
 {/if}
