@@ -9,6 +9,11 @@
 
   let estimatedStories = [];
   let show = false;
+  function download() {
+    window.location.href =
+      "https://asia-northeast1-pokerme.cloudfunctions.net/sessions?id=" + sid;
+  }
+
   function getEst(est) {
     if (!est) return [];
     return Object.keys(est).map(k => ({
@@ -44,27 +49,43 @@
 </script>
 
 {#if estimatedStories.length}
-  <div
-    class="text-center text-2xl text-grey-300 pb-5 font-mono cursor-pointer"
-    title="show/hide"
-    on:click={() => (show = !show)}>
-    <svg
-      fill="none"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-      class="inline-block"
-      width="22"
-      height="22"
-      stroke-width="2"
-      stroke="currentColor"
-      viewBox="0 0 24 24">
-      {#if show}
-        <path d="M19 9l-7 7-7-7" />
-      {:else}
-        <path d="M9 5l7 7-7 7" />
-      {/if}
-    </svg>
+  <div class="text-center text-2xl text-grey-300 pb-5 font-mono cursor-pointer">
+    <a href="javascript:void(0" on:click={() => (show = !show)}>
+      <svg
+        fill="none"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        class="inline-block"
+        width="22"
+        height="22"
+        stroke-width="2"
+        stroke="currentColor"
+        viewBox="0 0 24 24">
+        {#if show}
+          <path d="M19 9l-7 7-7-7" />
+        {:else}
+          <path d="M9 5l7 7-7 7" />
+        {/if}
+      </svg>
+    </a>
     Estimated Stories ({estimatedStories.length})
+    <a href="javascript:void(0)" on:click={download}>
+      <svg
+        fill="none"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        stroke="currentColor"
+        class="inline-block cursor-pointer"
+        title="download CSV"
+        width="22"
+        height="22"
+        viewBox="0 0 24 24">
+        <path
+          d="M8 16a5 5 0 01-.916-9.916 5.002 5.002 0 019.832 0A5.002 5.002 0
+          0116 16m-7 3l3 3m0 0l3-3m-3 3V10" />
+      </svg>
+    </a>
   </div>
   {#if show}
     <div
