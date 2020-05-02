@@ -24,7 +24,8 @@
           Enter your name
         </label>
         <input
-          minlength="4"
+          minlength="3"
+          maxlength="20"
           bind:this={usernameInput}
           class="shadow appearance-none border rounded w-full py-2 px-3
           text-gray-700 leading-tight focus:outline-none focus:shadow-outline"

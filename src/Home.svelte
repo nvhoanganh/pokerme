@@ -166,7 +166,7 @@
             on:click={() => navigateTo('/sessions/' + item.id)}>
             Created {item.timeStampt.toDate().toLocaleDateString()} at {item.timeStampt
               .toDate()
-              .toLocaleTimeString()} :
+              .toLocaleTimeString()} 
             <Navigate to={'/sessions/' + item.id}>
               <svg
                 fill="none"
