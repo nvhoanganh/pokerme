@@ -103,13 +103,18 @@
       </div>
     {/if}
     <div class="py-6">
+      <label
+        class="block text-gray-700 text-sm mb-2 text-left uppercase"
+        for="username">
+        Select Story Point for this PBI
+      </label>
       <select
         bind:value={myEstimate}
         class="appearance-none block w-full text-gray-700 border border-gray-300
         rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white
         focus:border-gray-500"
         on:change={() => submitMyEstimate($userName$)}>
-        <option value="">Select your estimate</option>
+        <option value="">Select</option>
         {#each CONST.estSizes as size}
           <option value={size}>{size}</option>
         {/each}
@@ -118,6 +123,10 @@
 
     {#if $isOwner$}
       <OwnerButtons {sid} />
+    {:else}
+      <div class="text-grey-300 text-sm">
+        Only session owner can reveal estimates
+      </div>
     {/if}
   </div>
 {:else if !$isOwner$}

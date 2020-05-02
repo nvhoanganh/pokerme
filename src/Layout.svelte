@@ -6,7 +6,7 @@
 
 <main class="text-center">
   <div class="text-3xl pt-3 pb-5 uppercase font-mono">
-    <a href="/">Poker Me!</a>
+    <Navigate to="/">Poker Me!</Navigate>
   </div>
   <Route {currentRoute} />
 </main>

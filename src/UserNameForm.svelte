@@ -1,17 +1,17 @@
 <script>
-  import firebase from "firebase/app";
-  import "firebase/auth";
-  import "firebase/firestore";
-  import "firebase/database";
-
   import { CONST } from "./consts.js";
   import { userName$, user$ } from "./stores.js";
+  import { onMount } from "svelte";
 
+  let usernameInput;
   let _userName = localStorage.getItem("name");
+
   function saveName() {
     localStorage.setItem("name", _userName);
     userName$.set(_userName);
   }
+
+  onMount(() => usernameInput.focus() );
 </script>
 
 {#if !$userName$}
@@ -25,6 +25,7 @@
         </label>
         <input
           minlength="4"
+          bind:this={usernameInput}
           class="shadow appearance-none border rounded w-full py-2 px-3
           text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
           id="username"
@@ -36,8 +37,8 @@
       <div class="flex items-center justify-between">
         <button
           on:click={saveName}
-          class="bg-blue-100 hover:bg-blue-500 text-blue-800 font-semibold w-full
-          hover:text-white py-2 px-4 border border-blue-500
+          class="bg-blue-100 hover:bg-blue-500 text-blue-800 font-semibold
+          w-full hover:text-white py-2 px-4 border border-blue-500
           hover:border-transparent rounded"
           disabled={!_userName}
           type="button">

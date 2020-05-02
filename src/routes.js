@@ -4,18 +4,13 @@ import Layout from './Layout.svelte';
 
 const routes = [
 	{
-		name: '/',
-		component: Home,
-		layout: Layout,
-	},
-	{
-		name: '/home',
-		component: Home,
-		layout: Layout,
-	},
-	{
 		name: '/sessions/:id',
 		component: Session,
+		layout: Layout,
+	},
+	{
+		name: '/',
+		component: Home,
 		layout: Layout,
 	},
 ];

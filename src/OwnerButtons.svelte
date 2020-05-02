@@ -35,28 +35,32 @@
         errorMsg = error;
       });
   }
+
+  currentStory$.subscribe(x => (currentStory = x));
 </script>
 
 {#if errorMsg}
   <p style="color: red">{errorMsg}</p>
 {/if}
 
-{#if $currentStory$}
-  {#if !$currentStory$.showResult}
+{#if currentStory}
+  {#if !currentStory.showResult && !currentStory.timeRemaining}
     <button
       on:click={showResultNow}
       class="bg-blue-100 hover:bg-blue-500 text-blue-800 font-semibold
       hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent
       rounded w-full">
-      Reveal Estimates
+      Reveal
     </button>
-  {:else}
+  {/if}
+
+  {#if currentStory.showResult}
     <button
-      on:click={() => saveResultNow($currentStory$, $currentStoryEstimates$)}
+      on:click={() => saveResultNow(currentStory, $currentStoryEstimates$)}
       class="bg-blue-100 hover:bg-blue-500 text-blue-800 font-semibold
       hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent
       rounded w-full">
-      Save Score
+      Save
     </button>
   {/if}
 {/if}

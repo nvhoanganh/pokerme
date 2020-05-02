@@ -5,12 +5,13 @@
   import copy from "copy-to-clipboard";
   import "firebase/database";
   import { Navigate, navigateTo } from "svelte-router-spa";
-  import { onDestroy } from "svelte";
+  import { onMount, onDestroy } from "svelte";
   import EstimatedStories from "./EstimatedStories.svelte";
   import slug from "slug";
   import { fade, fly } from "svelte/transition";
   import UserNameForm from "./UserNameForm.svelte";
   import AddNewStory from "./AddNewStory.svelte";
+  import ConnectedUsers from "./ConnectedUsers.svelte";
   import OwnerButtons from "./OwnerButtons.svelte";
   import EstimatingTask from "./EstimatingTask.svelte";
   import { CONST } from "./consts.js";
@@ -34,8 +35,11 @@
   let _userName;
   let errorMsg;
   let copied;
+
   let loadingSession = true;
   let loadingCurrentStory = true;
+
+  let activeConnections = [];
 
   const db = firebase.firestore();
   const rtdb = firebase.database();
@@ -70,53 +74,63 @@
   const estimatesRef = rtdb.ref(`${CONST.estimates}/${sid}`);
   const joinedRef = rtdb.ref(`${CONST.joined}/${sid}`);
 
-  rdbRef.on("value", function(snapshot) {
-    loadingCurrentStory = false;
+  onMount(() => {
+    console.log("listening on changes via websockets");
+    rdbRef.on("value", function(snapshot) {
+      loadingCurrentStory = false;
 
-    const story = snapshot.val();
+      const story = snapshot.val();
+      console.log("story changed", story);
 
-    // update store
-    currentStory$.set(story);
+      // update store
+      currentStory$.set(story);
 
-    // start counting ONLY from Owner Session
-    if (_isOwner && story && story.timeRemaining >= 0) {
-      setTimeout(() => {
-        if (story.timeRemaining <= 0) {
-          console.log("time's up", story.timeRemaining);
-          rtdb.ref(`${CONST.sessions}/${sid}`).update({
-            timeRemaining: -1,
-            showResult: true
-          });
-        } else {
-          console.log("time left:", story.timeRemaining);
-          rtdb.ref(`${CONST.sessions}/${sid}`).update({
-            timeRemaining: story.timeRemaining - 1
-          });
-        }
-      }, 1000);
-    }
-  });
-
-  estimatesRef.on("value", function(snapshot) {
-    currentStoryEstimates$.set(snapshot.val());
-  });
-
-  joinedRef.on("value", function(snapshot) {
-    const joinedList = snapshot.val() || {};
-    const list = Object.keys(joinedList).map(k => ({
-      user: k,
-      lastConnected: joinedList[k]
-    }));
-
-    const active = list.filter(x => {
-      return x.lastConnected && new Date() - new Date(x.lastConnected) < 10000;
+      // start counting ONLY from Owner Session
+      if (_isOwner && story && story.timeRemaining >= 0) {
+        setTimeout(() => {
+          if (story.timeRemaining <= 0) {
+            console.log("time's up", story.timeRemaining);
+            rtdb.ref(`${CONST.sessions}/${sid}`).update({
+              timeRemaining: -1,
+              showResult: true
+            });
+          } else {
+            console.log("time left:", story.timeRemaining);
+            rtdb.ref(`${CONST.sessions}/${sid}`).update({
+              timeRemaining: story.timeRemaining - 1
+            });
+          }
+        }, 1000);
+      }
     });
-    connected$.set(active);
+
+    estimatesRef.on("value", function(snapshot) {
+      console.log("estimates changed", snapshot.val());
+      currentStoryEstimates$.set(snapshot.val());
+    });
+
+    joinedRef.on("value", function(snapshot) {
+      const joinedList = snapshot.val() || {};
+      const list = Object.keys(joinedList).map(k => ({
+        user: k,
+        lastConnected: joinedList[k]
+      }));
+
+      activeConnections = list.filter(x => {
+        return (
+          x.lastConnected && new Date() - new Date(x.lastConnected) < 5000
+        );
+      });
+      console.log("joinlist changed", activeConnections);
+      connected$.set(activeConnections);
+    });
   });
 
   onDestroy(() => {
+    console.log("removing websockets connections");
     rdbRef && rdbRef.off();
     estimatesRef && estimatesRef.off();
+    joinedRef && joinedRef.off();
 
     // remove ping
     clearInterval(ping);
@@ -124,7 +138,6 @@
   });
 
   isOwner$.subscribe(x => (_isOwner = x));
-
   userName$.subscribe(x => {
     _userName = x;
     if (_userName && !ping) {
@@ -141,13 +154,15 @@
   {#if loadingCurrentStory || loadingSession}
     <div>Loading...</div>
   {:else if session}
-    <div class="text-grey-300 text-sm">
-      Session created on {session.timeStampt.toDate().toLocaleDateString()} at {session.timeStampt.toDate().toLocaleTimeString()}
-    </div>
-    <div class="text-grey-300 text-sm">Owner: {session.displayName}</div>
-
-    {#if $isOwner$}
-      <div class="mb-6">
+    <div class="mb-6">
+      <div class="text-grey-300 text-sm">
+        Session created on {session.timeStampt.toDate().toLocaleDateString()} at
+        {session.timeStampt.toDate().toLocaleTimeString()}
+      </div>
+      {#if !_isOwner}
+        <div class="text-grey-300 text-sm">Owner: {session.displayName}</div>
+      {:else}
+        <!-- Share link -->
         <div class="flex md:items-center max-w-md mx-auto pt-3">
           <div class="w-10/12">
             <input
@@ -198,47 +213,15 @@
             Copied to clipboard!
           </div>
         {/if}
-      </div>
-    {/if}
-
-    <div class="pt-6 max-w-md mx-auto">
-      {#if $connected$.length > 0}
-        <div class="text-center text-xs text-grey-300 pb-3">Conneted users</div>
-        <div class="grid grid-cols-2 gap-3 row-gap-3">
-          {#each $connected$ as item}
-            <div
-              class="text-center border rounded shadow-lg p-3 align-middle
-              uppercase"
-              in:fly={{ y: 100, duration: 400 }}
-              out:fade={{ y: -100, duration: 400 }}>
-              {$userName$ && item.user === slug($userName$) ? 'You' : item.user}
-              <svg
-                fill="none"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                class="inline-block text-green-500"
-                width="22"
-                height="22"
-                stroke="currentColor"
-                viewBox="0 0 24 24">
-                <path
-                  d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9
-                  9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-
-            </div>
-          {/each}
-        </div>
-      {:else}
-        <div class="text-center text-xs text-grey-300">
-          No one is currently connected to this session
-        </div>
       {/if}
     </div>
 
+    <!-- list of connected users -->
+    <ConnectedUsers {activeConnections} userName={_userName} />
+
+    <!-- forms: add new story or username form -->
     <div class="pt-6">
-      {#if $isOwner$}
+      {#if _isOwner}
         <AddNewStory sid={currentRoute.namedParams.id} />
       {:else}
         <UserNameForm {sid} />
@@ -246,10 +229,10 @@
     </div>
 
     {#if $userName$}
-      <div class="pt-6">
+      <div class="pt-8">
         <EstimatingTask {sid} />
       </div>
-      <div class="pt-6">
+      <div class="pt-8">
         <EstimatedStories {sid} />
       </div>
     {/if}
