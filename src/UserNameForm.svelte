@@ -25,7 +25,7 @@
         </label>
         <input
           minlength="3"
-          maxlength="20"
+          maxlength="15"
           bind:this={usernameInput}
           class="shadow appearance-none border rounded w-full py-2 px-3
           text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
