@@ -58,7 +58,7 @@ npm run dev
 
 Then open `http://localhost:5000/` make sure you can see the app running
 
-## Create firebase project via CLI
+## Create firebase project
 Go to https://console.firebase.google.com/?pli=1 and create new project
 
 ```sh
