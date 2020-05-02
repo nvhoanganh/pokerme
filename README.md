@@ -59,12 +59,14 @@ npm run dev
 Then open `http://localhost:5000/` make sure you can see the app running
 
 ## Create firebase project via CLI
+Go to https://console.firebase.google.com/?pli=1 and create new project
+
 ```sh
 npm i -g firebase-tools
 firebase login
 firebase init
 # select: Database, Firestore, Hosting and Functions
-# create new project (pick an ID for the project, this will be part of your URL)
+# pick project you just created from the list from the list
 # for function -> you can use either JS or TS
 # for hosting -> use public as the deploy folder, select Y for rewriting to /index.html
 ```
