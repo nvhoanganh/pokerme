@@ -5,7 +5,7 @@
     "build": "tsc",
     "serve": "npm run build && firebase emulators:start --only functions",
     "shell": "npm run build && firebase functions:shell",
-    "serve-prod": "npm run build && cross-env GOOGLE_APPLICATION_CREDENTIALS=c:/PokerMe-2b9f08530fcd.json firebase emulators:start --only functions",
+    "servep": "npm run build && cross-env GOOGLE_APPLICATION_CREDENTIALS=c:/PokerMe-2b9f08530fcd.json firebase emulators:start --only functions",
     "start": "npm run shell",
     "deploy": "firebase deploy --only functions",
     "logs": "firebase functions:log"

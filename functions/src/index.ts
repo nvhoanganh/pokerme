@@ -1,17 +1,17 @@
 import * as functions from 'firebase-functions';
+import * as admin from 'firebase-admin';
 
-const admin = require('firebase-admin');
 admin.initializeApp();
 const db = admin.firestore();
 
 export const sessions = functions
 	.region('asia-northeast1')
 	.https.onRequest((request, response) => {
-		console.log(request.query.id);
 		return db
 			.collection('sessions')
-			.doc(request.query.id)
+			.doc(request.query.id as string)
 			.collection('estimatedStories')
+			.limit(20)
 			.get()
 			.then((d: any) => {
 				const docs = d.docs.map((x: any) => ({
