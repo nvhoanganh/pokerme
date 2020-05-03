@@ -111,7 +111,10 @@ const firebaseConfig = {
 ```
 
 ## Deploy Functions (REST Api)
-edit `index.ts` file under `functions\src` folder to:
+edit `index.ts` file under `functions\src` folder to add a /sessions endpoint which return dummy data.
+
+Note: 'asia-northeast1' is the region where we run our functions from (don't change it)
+
 ```javascript
 import * as functions from 'firebase-functions';
 export const sessions = functions
@@ -130,9 +133,9 @@ from the command line, it should tell you the deployed URL of the REST API.
 Mine at: https://asia-northeast1-pokerme.cloudfunctions.net/sessions
 
 ## Step 1: check list
-- my UI is deployed
-- my REST API is deployed 
-- I have my `firebaseConfig` JSON file
+- my UI is deployed at https://pokerme.web.app
+- my function is running at https://asia-northeast1-pokerme.cloudfunctions.net/sessions
+- I know how to get my firebaseConfig.json 
 - I have enable Google Authentication on Firebase console
 
 # Step 2: Start coding the UI
