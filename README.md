@@ -96,7 +96,7 @@ We need this config file so that the UI can read/write into the database we crea
 -   Under Your apps => Click Web Icon to create new web app and Click on "Register Web app"
 -   Click on _Continue to Console_
 -   Under _Firebase SDK snippet_ select _Config_
--   Copy the JSON value, it should looks like this
+-   You will need this config file later
 
 ```sh
 const firebaseConfig = {
