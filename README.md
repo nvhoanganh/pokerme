@@ -60,12 +60,12 @@ Then open `http://localhost:5000/` make sure you can see the app running
 
 ## Create firebase project
 Go to https://console.firebase.google.com/?pli=1 and create new project
-
+Then go to the project setting https://console.firebase.google.com/project/pokerme2-53a08/settings/general and pick the location for your project
 ```sh
 npm i -g firebase-tools
 firebase login
 firebase init
-# select: Database, Firestore, Hosting and Functions
+# select: Hosting and Functions
 # pick project you just created from the list from the list
 # for function -> you can use either JS or TS
 # for hosting -> use public as the deploy folder, select Y for rewriting to /index.html
