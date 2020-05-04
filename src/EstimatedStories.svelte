@@ -1,6 +1,7 @@
 <script>
   import firebase from "firebase/app";
   import "firebase/firestore";
+  import Icon from "./Icon.svelte";
   import { onDestroy } from "svelte";
   import { CONST } from "./consts";
   import { fade, fly } from "svelte/transition";
@@ -51,40 +52,22 @@
 {#if estimatedStories.length}
   <div class="text-center text-2xl text-grey-300 pb-5 font-mono cursor-pointer">
     <a href="javascript:void(0" on:click={() => (show = !show)}>
-      <svg
-        fill="none"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        class="inline-block"
-        width="22"
-        height="22"
-        stroke-width="2"
-        stroke="currentColor"
-        viewBox="0 0 24 24">
+
+      <Icon classnames="inline-block cursor-pointer">
         {#if show}
           <path d="M19 9l-7 7-7-7" />
         {:else}
           <path d="M9 5l7 7-7 7" />
         {/if}
-      </svg>
+      </Icon>
     </a>
     Estimated Stories ({estimatedStories.length})
-    <a href="javascript:void(0)" on:click={download}>
-      <svg
-        fill="none"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        stroke-width="2"
-        stroke="currentColor"
-        class="inline-block cursor-pointer"
-        title="download CSV"
-        width="22"
-        height="22"
-        viewBox="0 0 24 24">
+    <a href="javascript:void(0)" on:click={download} title="download CSV">
+      <Icon classnames="inline-block cursor-pointer">
         <path
           d="M8 16a5 5 0 01-.916-9.916 5.002 5.002 0 019.832 0A5.002 5.002 0
           0116 16m-7 3l3 3m0 0l3-3m-3 3V10" />
-      </svg>
+      </Icon>
     </a>
   </div>
   {#if show}
