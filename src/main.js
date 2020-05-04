@@ -1,10 +1,11 @@
 import App from './App.svelte';
+import './firebase.js'
 
 const app = new App({
 	target: document.body,
 	props: {
-		name: 'world'
-	}
+		name: 'world',
+	},
 });
 
 export default app;
