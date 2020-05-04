@@ -41,6 +41,9 @@
 
   let activeConnections = [];
 
+  // how often to ping
+  const pingTimer = 2000;
+  const pingTimeOut = 10000;
   const db = firebase.firestore();
   const rtdb = firebase.database();
   const sid = currentRoute ? currentRoute.namedParams.id : null;
@@ -80,7 +83,6 @@
       loadingCurrentStory = false;
 
       const story = snapshot.val();
-      console.log("story changed", story);
 
       // update store
       currentStory$.set(story);
@@ -89,13 +91,11 @@
       if (_isOwner && story && story.timeRemaining >= 0) {
         setTimeout(() => {
           if (story.timeRemaining <= 0) {
-            console.log("time's up", story.timeRemaining);
             rtdb.ref(`${CONST.sessions}/${sid}`).update({
               timeRemaining: -1,
               showResult: true
             });
           } else {
-            console.log("time left:", story.timeRemaining);
             rtdb.ref(`${CONST.sessions}/${sid}`).update({
               timeRemaining: story.timeRemaining - 1
             });
@@ -105,7 +105,6 @@
     });
 
     estimatesRef.on("value", function(snapshot) {
-      console.log("estimates changed", snapshot.val());
       currentStoryEstimates$.set(snapshot.val());
     });
 
@@ -118,16 +117,26 @@
 
       activeConnections = list.filter(x => {
         return (
-          x.lastConnected && new Date() - new Date(x.lastConnected) < 5000
+          x.lastConnected &&
+          new Date() - new Date(x.lastConnected) < pingTimeOut
         );
       });
-      console.log("joinlist changed", activeConnections);
+
+      let disconnected = list.filter(x => {
+        return (
+          x.lastConnected &&
+          new Date() - new Date(x.lastConnected) >= pingTimeOut
+        );
+      });
+      if (disconnected.length > 0) {
+        console.log("Disconnnected", disconnected);
+      }
+
       connected$.set(activeConnections);
     });
   });
 
   onDestroy(() => {
-    console.log("removing websockets connections");
     rdbRef && rdbRef.off();
     estimatesRef && estimatesRef.off();
     joinedRef && joinedRef.off();
@@ -141,7 +150,10 @@
   userName$.subscribe(x => {
     _userName = x;
     if (_userName && !ping) {
-      ping = setInterval(() => updateUserStatus(sid, _userName, true), 1000);
+      ping = setInterval(
+        () => updateUserStatus(sid, _userName, true),
+        pingTimer
+      );
     }
   });
 </script>
