@@ -6,7 +6,7 @@
   export let currentRoute;
 </script>
 
-<main class="text-center container mx-auto h-screen">
+<main class="text-center container mx-auto h-screen px-2">
   <div class="text-3xl pt-3 pb-5 uppercase font-mono">
     <Navigate to="/">Poker Me!</Navigate>
   </div>

@@ -1,6 +1,5 @@
 <script>
-  import LoadingFlat from "./LoadingFlat.svelte";
-  import { Navigate, navigateTo } from "svelte-router-spa";
+  import { Navigate } from "svelte-router-spa";
   import { onDestroy } from "svelte";
   import EstimatedStories from "./EstimatedStories.svelte";
   import UserNameForm from "./UserNameForm.svelte";
@@ -13,6 +12,7 @@
     user$,
     userName$,
     isOwner$,
+    loadingCurrentStory$,
     updateUserStatus,
     activeSession$,
     loadingSessionError$,
@@ -23,7 +23,6 @@
 
   let ping;
   let _userName;
-
   const sid = currentRoute ? currentRoute.namedParams.id : null;
 
   if (sid) {
@@ -36,7 +35,6 @@
     updateUserStatus(sid, _userName, false);
   });
 
-  
   userName$.subscribe(x => {
     _userName = x;
     if (_userName && !ping) {
@@ -52,8 +50,8 @@
   <div class="text-red-500">{$loadingSessionError$}</div>
 {/if}
 
-{#if $loadingSession$}
-  <div>Loading...</div>
+{#if $loadingSession$ || $loadingCurrentStory$}
+  <div>Loading session...</div>
 {:else if session}
   <div class="mb-6">
     <div class="text-grey-300 text-sm">

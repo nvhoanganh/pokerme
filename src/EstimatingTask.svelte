@@ -5,6 +5,7 @@
   import { CONST } from "./consts";
   import {
     currentStory$,
+    currentStoryEstimatesArray$,
     currentStoryEstimates$,
     userName$,
     isOwner$,
@@ -14,18 +15,8 @@
 
   export let sid;
 
-  let votes = [];
   let myEstimate;
   let currentStory;
-
-  currentStoryEstimates$.subscribe(x => {
-    if (x) {
-      votes = Object.keys(x).map(k => ({
-        name: k,
-        estimate: x[k]
-      }));
-    }
-  });
 
   currentStory$.subscribe(x => {
     currentStory = x;
@@ -39,7 +30,7 @@
       submitEstimate(sid, userName, myEstimate);
     }
   }
-  
+
   let userName;
   userName$.subscribe(x => (userName = x));
 </script>
@@ -53,7 +44,7 @@
 
     <div class="py-6">
       <div class="grid grid-cols-2 gap-3 row-gap-3">
-        {#each votes as item}
+        {#each $currentStoryEstimatesArray$ as item}
           <div
             class="text-center border rounded shadow p-3 align-middle uppercase"
             in:fly={{ y: 100, duration: 400 }}>

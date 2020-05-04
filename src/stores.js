@@ -4,11 +4,13 @@ import 'firebase/database';
 import 'firebase/firestore';
 import slug from 'slug';
 import { derived, writable } from 'svelte/store';
+import { navigateTo } from 'svelte-router-spa';
 import { CONST } from './consts.js';
-import { Sessions, db, fs } from './firebase.js';
+import { Sessions, db } from './firebase.js';
 export const user$ = writable(null);
 
 let user;
+
 export const init$ = writable(true, function start(set) {
 	firebase.auth().onAuthStateChanged((u) => {
 		user = u;
@@ -40,12 +42,18 @@ export const init$ = writable(true, function start(set) {
 });
 
 export const fbError$ = writable(null);
+export const createSessionError$ = writable(null);
 export const sessionsList$ = writable([]);
 export const currentStory$ = writable(null);
 export const connected$ = writable([]);
 export const previousSessions$ = writable([]);
-
+export const activeSession$ = createSession();
+export const userName$ = writable(null);
+export const currentStoryEstimates$ = writable(null);
+export const addNewStoryError$ = writable(null);
+export const saveStoryError$ = writable(null);
 export const loadingSession$ = writable(false);
+export const loadingCurrentStory$ = writable(false);
 export const loadingSessionError$ = writable(null);
 
 // custom store
@@ -59,7 +67,7 @@ function createSession() {
 		subscribe,
 		load: (sid) => {
 			loadingSession$.set(true);
-
+			loadingCurrentStory$.set(true);
 			Sessions.doc(sid)
 				.get()
 				.then((doc) => {
@@ -78,6 +86,7 @@ function createSession() {
 							console.log('new story', story);
 
 							// update store
+							loadingCurrentStory$.set(false);
 							currentStory$.set(story);
 
 							// start counting ONLY from Owner Sessionk
@@ -101,7 +110,7 @@ function createSession() {
 						console.log('listening on estimates');
 						estimatesRef.on('value', (snapshot) => {
 							currentStoryEstimates$.set(snapshot.val());
-							console.log('story', snapshot.val());
+							console.log('estimates', snapshot.val());
 						});
 
 						console.log('listening on connected users');
@@ -138,36 +147,22 @@ function createSession() {
 		},
 	};
 }
-export const activeSession$ = createSession();
 
-export const userName$ = writable(null);
-export const currentStoryEstimates$ = writable(null);
-
-export const updateUserStatus = (sid, user, connected) => {
-	let update = {};
-	update[`${CONST.joined}/${sid}/${slug(user)}`] = connected
-		? new Date().toISOString()
-		: null;
-	firebase.database().ref().update(update);
-};
-
-export const addNewStoryError$ = writable(null);
-
-export const startNewStory = (sid, story) => {
-	db.ref(`${CONST.sessions}/${sid}`).set(story, (error) =>
-		addNewStoryError$.set(error)
-	);
-};
-
-export const submitEstimate = (sid, user, est) => {
-	db.ref(`${CONST.estimates}/${sid}`).update({
-		[slug(user)]: est,
-	});
-};
-
+// derived states
 export const isOwner$ = derived(
 	[user$, activeSession$],
 	([user, session]) => user && session && user.uid === session.createdBy
+);
+
+export const currentStoryEstimatesArray$ = derived(
+	currentStoryEstimates$,
+	(x) =>
+		x
+			? Object.keys(x).map((k) => ({
+					name: k,
+					estimate: x[k],
+			  }))
+			: []
 );
 
 export const otherConnectedUsers$ = derived(
@@ -181,5 +176,59 @@ export const otherConnectedUsers$ = derived(
 	}
 );
 
+// functions
+export const startNewStory = (sid, story) => {
+	db.ref(`${CONST.sessions}/${sid}`).set(story, (error) =>
+		addNewStoryError$.set(error)
+	);
+};
+
+export const submitEstimate = (sid, user, est) => {
+	db.ref(`${CONST.estimates}/${sid}`).update({
+		[slug(user)]: est,
+	});
+};
+
+export const revealEstimates = (sid) => {
+	db.ref(`${CONST.sessions}/${sid}`).update({ timeRemaining: 10 });
+};
+
+export const updateUserStatus = (sid, user, connected) => {
+	let update = {};
+	update[`${CONST.joined}/${sid}/${slug(user)}`] = connected
+		? new Date().toISOString()
+		: null;
+	firebase.database().ref().update(update);
+};
+
+export const saveResult = (sid, data) => {
+	Sessions.doc(sid)
+		.collection(CONST.estimatedStories)
+		.doc(data.taskId.toString())
+		.set(data)
+		.then(() => {
+			console.log('removing from realtime database');
+
+			currentStory$.set(null);
+			currentStoryEstimates$.set(null);
+			saveStoryError$.set(null);
+			db.ref(`${CONST.sessions}/${sid}`).remove();
+			db.ref(`${CONST.estimates}/${sid}`).remove();
+		})
+		.catch((error) => saveStoryError$.set(error));
+};
+
+export const newSession = (user) => {
+	Sessions.add({
+		createdBy: user.uid,
+		displayName: user.displayName,
+		timeStampt: new Date(),
+	})
+		.then((doc) => {
+			createSessionError$.set(null);
+			navigateTo(`/sessions/${doc.id}`);
+		})
+		.catch((error) => createSessionError$.set(error));
+};
 let isOwner;
 isOwner$.subscribe((x) => (isOwner = x));

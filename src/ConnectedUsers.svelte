@@ -4,7 +4,10 @@
   import Icon from "./Icon.svelte";
 
   let others;
-  otherConnectedUsers$.subscribe(x => (others = x));
+  otherConnectedUsers$.subscribe(x => {
+    console.log("others are", others);
+    others = x;
+  });
 </script>
 
 <div class="max-w-md mx-auto">

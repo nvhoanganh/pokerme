@@ -11,7 +11,9 @@
     userName$.set(_userName);
   }
 
-  onMount(() => usernameInput.focus() );
+  onMount(() => {
+    usernameInput && usernameInput.focus();
+  });
 </script>
 
 {#if !$userName$}
