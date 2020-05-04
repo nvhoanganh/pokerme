@@ -80,10 +80,8 @@ function createSession() {
 						estimatesRef = db.ref(`${CONST.estimates}/${sid}`);
 						joinedRef = db.ref(`${CONST.joined}/${sid}`);
 
-						console.log('listening on active Story');
 						storyRef.on('value', (snapshot) => {
 							const story = snapshot.val();
-							console.log('new story', story);
 
 							// update store
 							loadingCurrentStory$.set(false);
@@ -107,16 +105,12 @@ function createSession() {
 							}
 						});
 
-						console.log('listening on estimates');
 						estimatesRef.on('value', (snapshot) => {
 							currentStoryEstimates$.set(snapshot.val());
-							console.log('estimates', snapshot.val());
 						});
 
-						console.log('listening on connected users');
 						joinedRef.on('value', (snapshot) => {
 							const joinedList = snapshot.val() || {};
-							console.log('joined list', snapshot.val());
 							const list = Object.keys(joinedList).map((k) => ({
 								user: k,
 								lastConnected: joinedList[k],
@@ -140,7 +134,6 @@ function createSession() {
 				.finally(() => loadingSession$.set(false));
 		},
 		destroy: () => {
-			console.log('removing realtime listeners');
 			storyRef && storyRef.off();
 			estimatesRef && estimatesRef.off();
 			joinedRef && joinedRef.off();
@@ -171,7 +164,6 @@ export const otherConnectedUsers$ = derived(
 		const others = connected.filter(
 			(item) => item.user !== slug(userName || '')
 		);
-		console.log('others', others);
 		return others;
 	}
 );
@@ -207,8 +199,6 @@ export const saveResult = (sid, data) => {
 		.doc(data.taskId.toString())
 		.set(data)
 		.then(() => {
-			console.log('removing from realtime database');
-
 			currentStory$.set(null);
 			currentStoryEstimates$.set(null);
 			saveStoryError$.set(null);

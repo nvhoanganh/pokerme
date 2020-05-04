@@ -5,7 +5,6 @@
 
   let others;
   otherConnectedUsers$.subscribe(x => {
-    console.log("others are", others);
     others = x;
   });
 </script>
