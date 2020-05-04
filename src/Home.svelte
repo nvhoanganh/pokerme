@@ -1,29 +1,12 @@
 <script>
   import { Navigate, navigateTo } from "svelte-router-spa";
-  import { user$, init$ } from "./stores";
+  import { sessionsList$, user$, fbError$ } from "./stores";
   import { Sessions, loginGoogle, logout } from "./firebase.js";
   import Icon from "./Icon.svelte";
+  import Button from "./Button.svelte";
 
-  let errorMsg;
-  let listOfSessions = [];
-  let user;
-
-  user$.subscribe(u => {
-    user = u;
-
-    if (!u) return;
-    Sessions.where("createdBy", "==", u.uid)
-      .limit(100)
-      .get()
-      .then(snapshot => {
-        let list = [];
-        snapshot.forEach(doc => list.push({ id: doc.id, ...doc.data() }));
-        listOfSessions = list;
-      })
-      .catch(error => (errorMsg = error));
-  });
-
-  function newSession() {
+  let createError;
+  function newSession(user) {
     Sessions.add({
       createdBy: user.uid,
       displayName: user.displayName,
@@ -34,9 +17,10 @@
   }
 </script>
 
-{#if errorMsg}
-  <div class="text-red-300 text-xl">{errorMsg}</div>
+{#if $fbError$ || createError}
+  <div class="text-red-600">{$fbError$ || createError}</div>
 {/if}
+
 {#if !$user$}
   <div class="text-grey-300 text pb-4 font-mono">
     <Icon classnames="inline-block text-orange-500">
@@ -54,12 +38,7 @@
   <div class="text-grey-400 font-sm font-mono pb-8 pt-6">
     Sign in to create new session
   </div>
-  <button
-    on:click={loginGoogle}
-    type="button"
-    class="max-w-sm mx-auto social bg-white hover:bg-red-400 block
-    hover:text-white py-2 px-4 border border-red-700 hover:border-transparent
-    rounded">
+  <Button on:click={loginGoogle}>
     <svg
       width="20"
       height="20"
@@ -92,7 +71,7 @@
         fill="#EB4335" />
     </svg>
     Sign In with Google
-  </button>
+  </Button>
 {:else}
   <div class="text-grey-400 font-sm">
     Hello {$user$.displayName}
@@ -105,22 +84,17 @@
     </a>
   </div>
   <div class="py-6">
-    <button
-      on:click={newSession}
-      class="max-w-sm bg-blue-100 hover:bg-blue-500 text-blue-800 font-semibold
-      hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent
-      rounded"
-      type="button">
+    <Button on:click={() => newSession($user$)}>
       Start New Planning Poker Session
-    </button>
+    </Button>
   </div>
   <div class="m-6 max-w-md mx-auto">
     <div class="text-center text-3xl text-grey-300 pb-5">Previous Sessions</div>
-    {#each listOfSessions as item}
+    {#each $sessionsList$ as item}
       <div
         class="border shadow p-4 my-3 font-mono cursor-pointer"
         on:click={() => navigateTo('/sessions/' + item.id)}>
-        Created {item.timeStampt.toDate().toLocaleDateString()} at {item.timeStampt.toDate().toLocaleTimeString()}
+        Created {item.timeStampt.toLocaleDateString()} at {item.timeStampt.toLocaleTimeString()}
         <Navigate to={'/sessions/' + item.id}>
           <Icon classnames="inline-block" width="24" height="24">
             <path

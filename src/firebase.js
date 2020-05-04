@@ -12,6 +12,7 @@ firebase.initializeApp({
 
 export const Sessions = firebase.firestore().collection('sessions');
 export const auth = firebase.auth();
+export const currentUser = firebase.auth().currentUser;
 
 export function loginGoogle() {
   firebase.auth().signInWithRedirect(new firebase.auth.GoogleAuthProvider());

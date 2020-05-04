@@ -1,6 +1,6 @@
 <script>
   import { Route } from "svelte-router-spa";
-  import { Navigate, navigateTo } from "svelte-router-spa";
+  import { Navigate } from "svelte-router-spa";
   import LoadingFlat from "./LoadingFlat.svelte";
   import { init$ } from "./stores";
   export let currentRoute;
