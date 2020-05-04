@@ -58,13 +58,15 @@ npm run dev
 
 Then open `http://localhost:5000/` make sure you can see the app running
 
-## Create firebase project via CLI
+## Create firebase project
+Go to https://console.firebase.google.com/?pli=1 and create new project
+Then go to the project setting https://console.firebase.google.com/project/pokerme2-53a08/settings/general and pick the location for your project
 ```sh
 npm i -g firebase-tools
 firebase login
 firebase init
-# select: Database, Firestore, Hosting and Functions
-# create new project (pick an ID for the project, this will be part of your URL)
+# select: Hosting and Functions
+# pick project you just created from the list from the list
 # for function -> you can use either JS or TS
 # for hosting -> use public as the deploy folder, select Y for rewriting to /index.html
 ```
@@ -94,7 +96,7 @@ We need this config file so that the UI can read/write into the database we crea
 -   Under Your apps => Click Web Icon to create new web app and Click on "Register Web app"
 -   Click on _Continue to Console_
 -   Under _Firebase SDK snippet_ select _Config_
--   Copy the JSON value, it should looks like this
+-   You will need this config file later
 
 ```sh
 const firebaseConfig = {
@@ -109,7 +111,10 @@ const firebaseConfig = {
 ```
 
 ## Deploy Functions (REST Api)
-edit `index.ts` file under `functions\src` folder to:
+edit `index.ts` file under `functions\src` folder to add a /sessions endpoint which return dummy data.
+
+Note: 'asia-northeast1' is the region where we run our functions from (don't change it)
+
 ```javascript
 import * as functions from 'firebase-functions';
 export const sessions = functions
@@ -128,9 +133,9 @@ from the command line, it should tell you the deployed URL of the REST API.
 Mine at: https://asia-northeast1-pokerme.cloudfunctions.net/sessions
 
 ## Step 1: check list
-- my UI is deployed
-- my REST API is deployed 
-- I have my `firebaseConfig` JSON file
+- my UI is deployed at https://pokerme.web.app
+- my function is running at https://asia-northeast1-pokerme.cloudfunctions.net/sessions
+- I know how to get my firebaseConfig.json 
 - I have enable Google Authentication on Firebase console
 
 # Step 2: Start coding the UI
