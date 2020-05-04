@@ -143,18 +143,6 @@ export const activeSession$ = createSession();
 export const userName$ = writable(null);
 export const currentStoryEstimates$ = writable(null);
 
-// derived
-export const isOwner$ = derived(
-	[user$, activeSession$],
-	([user, session]) => user && session && user.uid === session.createdBy
-);
-
-export const otherConnectedUsers$ = derived(
-	[userName$, connected$],
-	([userName, connected]) =>
-		connected.filter((item) => userName && item.user !== slug(userName))
-);
-
 export const updateUserStatus = (sid, user, connected) => {
 	let update = {};
 	update[`${CONST.joined}/${sid}/${slug(user)}`] = connected
@@ -162,6 +150,36 @@ export const updateUserStatus = (sid, user, connected) => {
 		: null;
 	firebase.database().ref().update(update);
 };
+
+export const addNewStoryError$ = writable(null);
+
+export const startNewStory = (sid, story) => {
+	db.ref(`${CONST.sessions}/${sid}`).set(story, (error) =>
+		addNewStoryError$.set(error)
+	);
+};
+
+export const submitEstimate = (sid, user, est) => {
+	db.ref(`${CONST.estimates}/${sid}`).update({
+		[slug(user)]: est,
+	});
+};
+
+export const isOwner$ = derived(
+	[user$, activeSession$],
+	([user, session]) => user && session && user.uid === session.createdBy
+);
+
+export const otherConnectedUsers$ = derived(
+	[userName$, connected$],
+	([userName, connected]) => {
+		const others = connected.filter(
+			(item) => item.user !== slug(userName || '')
+		);
+		console.log('others', others);
+		return others;
+	}
+);
 
 let isOwner;
 isOwner$.subscribe((x) => (isOwner = x));

@@ -1,31 +1,14 @@
 <script>
-  import firebase from "firebase/app";
-  import "firebase/auth";
-  import "firebase/firestore";
-  import "firebase/database";
   import { CONST } from "./consts.js";
-  import { currentStory$ } from "./stores.js";
+  import { currentStory$, addNewStoryError$, startNewStory } from "./stores.js";
 
   export let sid;
 
-  let errorMsg;
   let taskId;
   let description;
 
   function startNew() {
-    firebase
-      .database()
-      .ref(`${CONST.sessions}/${sid}`)
-      .set(
-        {
-          taskId,
-          description,
-          startTime: new Date()
-        },
-        function(error) {
-          errorMsg = error;
-        }
-      );
+    startNewStory(sid, { taskId, description, startTime: new Date() });
   }
 
   currentStory$.subscribe(x => {
@@ -36,8 +19,8 @@
   });
 </script>
 
-{#if errorMsg}
-  <p style="color: red">{errorMsg}</p>
+{#if $addNewStoryError$}
+  <div class="text-red-500">{$addNewStoryError$}</div>
 {/if}
 
 <!-- do not allow adding multiple -->
