@@ -168,6 +168,11 @@ export const otherConnectedUsers$ = derived(
 	}
 );
 
+export const hideQrCode$ = derived(
+	[isOwner$, otherConnectedUsers$],
+	([isOwner, others]) => isOwner && others && others.length > 0
+);
+
 // functions
 export const startNewStory = (sid, story) => {
 	db.ref(`${CONST.sessions}/${sid}`).set(story, (error) =>
