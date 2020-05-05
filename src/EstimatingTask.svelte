@@ -36,7 +36,11 @@
 </script>
 
 {#if currentStory}
-  <div class="p-5 overflow-hidden shadow-lg border mx-auto max-w-md rounded">
+  <div
+    class="p-5 overflow-hidden shadow-lg border mx-auto max-w-md rounded"
+    in:fly={{ y: 100, duration: 400 }}
+    out:fly={{ y: 100, duration: 400 }}
+    >
     <div class="pt-2">
       <div class="text-3xl">PBI {currentStory.taskId}</div>
       <div class="font-mono text-sm italic">{currentStory.description}</div>
